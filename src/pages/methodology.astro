@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import { REPO } from '../lib/data';
+---
+<Base title="Methodology · Awesome AI Security Engineering" active="methodology">
+  <div class="wrap">
+    <div class="ex-head">
+      <div class="kicker">Methodology</div>
+      <h1 style="font-size:38px;margin:8px 0 0">How a resource earns its place.</h1>
+      <p class="sub" style="margin-top:12px">The same criteria apply to every entry. Anything affiliated with the maintainers' sponsor is labeled.</p>
+    </div>
+    <div class="care" style="margin-bottom:30px">
+      <div class="carec"><div class="kicker">Software</div><h4>Open source, for real</h4><p style="color:var(--mute);font-size:14px">Public source, an identifiable open-source license (OSI-approved preferred), and meaningful functionality in the open-source version. Open-core projects qualify only for the capabilities that are genuinely open.</p></div>
+      <div class="carec"><div class="kicker">Standards and frameworks</div><h4>Open and documented</h4><p style="color:var(--mute);font-size:14px">Publicly accessible specification, documented implementation rights and a transparent development process. Formal standards, community frameworks and guidance are labeled differently.</p></div>
+      <div class="carec"><div class="kicker">Research</div><h4>Reproducible artifacts</h4><p style="color:var(--mute);font-size:14px">Code, datasets, benchmark harnesses or reproducible experiments. A free paper alone does not qualify.</p></div>
+    </div>
+    <h3 class="s" style="margin-top:0">Quality and neutrality</h3>
+    <p style="color:var(--mute);max-width:720px">Entries are judged on engineering relevance, technical credibility, documentation, maintenance and distinctiveness. Stars are not a criterion. There is no placement based on sponsorship or brand, no proprietary products, and no projects maintained by direct competitors of the community's sponsor.</p>
+    <h3 class="s">Verification levels</h3>
+    <div class="vtl" style="max-width:720px">
+      <div class="on">verified · direct<b>A maintainer read the primary source (LICENSE file or official page)</b></div>
+      <div class="on">verified · delegated<b>A delegated research pass read the primary source; spot-checks welcome</b></div>
+      <div class="part">partial<b>Some facts could not be confirmed; gaps are stated on the entry</b></div>
+    </div>
+    <div class="callout" style="max-width:720px"><b>Interpret with care</b>Last-release data is evidence found on the verification date, not a promise of maintenance.</div>
+    <p style="margin-top:26px"><a class="btn" href={`${REPO}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener">Full rules in CONTRIBUTING.md ↗</a></p>
+  </div>
+</Base>

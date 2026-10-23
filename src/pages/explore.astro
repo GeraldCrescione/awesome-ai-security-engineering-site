@@ -1,0 +1,132 @@
+---
+import Base from '../layouts/Base.astro';
+import { resources, ST, DOM, STAGES, u } from '../lib/data';
+const payload = JSON.stringify({
+  D: resources.map(({ description, licenseNote, licenseEvidence, source, ...r }) => r),
+  ST, DOM, STAGES, base: u(),
+}).replace(/</g, '\\u003c');
+---
+<Base title="Explore · Awesome AI Security Engineering" active="explore">
+  <div id="root"></div>
+  <div class="tray" id="tray"></div>
+  <div id="modal"></div>
+  <noscript><div class="wrap"><p class="sub">Explore needs JavaScript. The full list is in the <a href="https://github.com/GeraldCrescione/awesome-ai-security-engineering">repository README</a>.</p></div></noscript>
+  <script id="payload" type="application/json" set:html={payload}></script>
+  <script is:inline>
+const P=JSON.parse(document.getElementById('payload').textContent);
+const {D,ST,DOM,STAGES,base}=P;
+const $=(s,e=document)=>e.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+const byId=id=>D.find(x=>x.id===id);
+const primary=r=>r.stages[0];
+const TYPES=[...new Set(D.map(d=>d.type))].sort();
+const FLAGS=[...new Set(D.map(d=>d.flag).filter(Boolean))].sort();
+const link=id=>`${base}/resources/${id}/`.replace(/\/\/+/g,'/');
+let params=new URLSearchParams(location.search);
+const pins=()=>(params.get('pin')||'').split(',').filter(Boolean);
+const list=k=>(params.get(k)||'').split(',').filter(Boolean);
+
+const vchip=r=>`<span class="chip ${r.ver==='verified'?'ok':'warn'}">${r.ver==='verified'?'✓':'◐'} ${r.ver} · ${r.by}</span>`;
+const schip=s=>`<span class="chip" style="--c:${ST[s].c}"><i class="d"></i>${s}</span>`;
+const lchip=r=>`<span class="chip">${esc(r.license)}</span>${r.flag?`<span class="chip warn">⚑ ${esc(r.flag)}</span>`:''}`;
+const dchip=r=>r.disc?`<span class="chip snyk">Snyk-affiliated</span>`:'';
+
+function filtered(){
+  const st=list('stage'),dm=list('domain'),ty=list('type'),ve=list('ver'),fl=list('flag'),q=(params.get('q')||'').toLowerCase();
+  return D.filter(r=>
+    (!st.length||r.stages.some(s=>st.includes(s)))&&
+    (!dm.length||r.domains.some(s=>dm.includes(s)))&&
+    (!ty.length||ty.includes(r.type))&&
+    (!ve.length||ve.includes(r.ver))&&
+    (!fl.length||(fl.includes('none')&&!r.flag)||fl.includes(r.flag))&&
+    (!q||(r.name+r.summary+r.maint+r.notes).toLowerCase().includes(q)));
+}
+function sync(){history.replaceState(null,'',location.pathname+(params.toString()?'?'+params.toString():''));}
+function toggle(k,v){const a=list(k);const i=a.indexOf(v);i>=0?a.splice(i,1):a.push(v);a.length?params.set(k,a.join(',')):params.delete(k);sync();renderExplore();}
+function setP(k,v,lite){v?params.set(k,v):params.delete(k);sync();lite?renderResults():renderExplore();}
+function resetFilters(){const p=params.get('pin');params=new URLSearchParams(p?{pin:p}:{});sync();renderExplore();}
+function pinToggle(id,e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  const a=pins();const i=a.indexOf(id);
+  if(i>=0)a.splice(i,1);else if(a.length>=4){toast('Compare up to 4 resources');return;}else a.push(id);
+  a.length?params.set('pin',a.join(',')):params.delete('pin');
+  sync();renderResults();renderTray();
+}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
+function cmdline(){
+  const parts=[];
+  ['stage','domain','type','ver','flag'].forEach(k=>{if(list(k).length)parts.push(`<span class="a">--${k}</span> ${list(k).map(v=>esc(v.includes(' ')?`"${v}"`:v)).join(',')}`);});
+  if(params.get('q'))parts.push(`<span class="a">--q</span> "${esc(params.get('q'))}"`);
+  return `<span class="p">$</span> awesome explore ${parts.join(' ')}`;
+}
+function opts(k,items,counts,labelFn){
+  const sel=list(k);
+  return items.map(v=>`<label class="opt" ${k==='stage'?`style="--c:${ST[v].c}"`:''}><input type="checkbox" ${sel.includes(v)?'checked':''} onchange="toggle('${k}','${v.replace(/'/g,"\\'")}')">${k==='stage'?'<i class="d"></i>':''}${esc(labelFn?labelFn(v):v)}<em>${counts(v)}</em></label>`).join('');
+}
+function renderExplore(){
+  const view=params.get('view')||'table';
+  $('#root').innerHTML=`<div class="wrap">
+   <div class="ex-head"><div class="kicker">Explore</div><h1 style="font-size:38px;margin:8px 0 0">Inspect every resource.</h1>
+   <div class="cmd" id="cmd">${cmdline()}</div></div>
+   <div class="ex">
+    <aside class="side">
+      <div class="fg"><h5>Lifecycle stage</h5>${opts('stage',STAGES,v=>D.filter(r=>r.stages.includes(v)).length,cap)}</div>
+      <div class="fg"><h5>Domain</h5>${opts('domain',Object.keys(DOM),v=>D.filter(r=>r.domains.includes(v)).length,v=>DOM[v])}</div>
+      <div class="fg"><h5>Type</h5>${opts('type',TYPES,v=>D.filter(r=>r.type===v).length)}</div>
+      <div class="fg"><h5>Verification</h5>${opts('ver',['verified','partial'],v=>D.filter(r=>r.ver===v).length,cap)}</div>
+      <div class="fg"><h5>License caveat</h5>${opts('flag',['none',...FLAGS],v=>v==='none'?D.filter(r=>!r.flag).length:D.filter(r=>r.flag===v).length,v=>v==='none'?'No caveat':v)}</div>
+      <button class="btn sm" onclick="resetFilters()">Reset filters</button>
+    </aside>
+    <div>
+      <div class="toolbar">
+        <input class="search" placeholder="Search name, summary, maintainer, notes…" value="${esc(params.get('q')||'')}" oninput="setP('q',this.value,true)">
+        <div class="tabs">${['table','cards','coverage'].map(v=>`<button class="${view===v?'on':''}" onclick="setP('view','${v==='table'?'':v}')">${cap(v)}</button>`).join('')}</div>
+        <button class="btn sm" onclick="copyLink()">Copy share link</button>
+        <button class="btn sm" onclick="exportCSV()">Export CSV</button>
+      </div>
+      <div id="results"></div>
+    </div></div></div>`;
+  renderResults();renderTray();
+}
+function renderResults(){
+  const rows=filtered();const view=params.get('view')||'table';const p=pins();
+  $('#cmd').innerHTML=cmdline();
+  let h=`<div class="count">${rows.length} of ${D.length} resources · ${rows.filter(r=>r.ver==='verified').length} verified</div>`;
+  if(!rows.length)h+=`<div class="empty">No resources match these filters. <a href="#" onclick="resetFilters();return false" style="color:var(--brand)">Reset</a></div>`;
+  else if(view==='cards')h+=`<div class="cards">${rows.map(r=>`<div class="card" style="--c:${ST[primary(r)].c}"><a class="ov" href="${link(r.id)}" aria-label="${esc(r.name)}"></a><button class="pin ${p.includes(r.id)?'on':''}" onclick="pinToggle('${r.id}',event)" title="Pin to compare">${p.includes(r.id)?'✓':'+'}</button><div class="k" style="color:var(--c)">${primary(r)} · ${esc(r.type)}</div><h3>${esc(r.name)}</h3><p>${esc(r.summary)}</p><div class="chips">${vchip(r)}${lchip(r)}${dchip(r)}</div></div>`).join('')}</div>`;
+  else if(view==='coverage')h+=`<p class="sub" style="margin-bottom:14px">Counts reflect the current filters. Click a cell to drill in.</p>${matrixFor(rows)}`;
+  else h+=`<table class="t"><thead><tr><th></th><th>Resource</th><th class="hm">Stages</th><th class="hm">Type</th><th>License</th><th>Verification</th><th class="hm">Last release</th></tr></thead><tbody>${rows.map(r=>`<tr><td><button class="pin ${p.includes(r.id)?'on':''}" onclick="pinToggle('${r.id}',event)" title="Pin to compare">${p.includes(r.id)?'✓':'+'}</button></td><td><a class="nm" href="${link(r.id)}">${esc(r.name)}</a><span class="sm">${esc(r.summary)}</span></td><td class="hm"><div class="dots">${r.stages.map(s=>`<i style="--c:${ST[s].c}" title="${s}"></i>`).join('')}</div></td><td class="hm">${esc(r.type)}</td><td><div class="chips">${lchip(r)}</div></td><td>${vchip(r)}</td><td class="hm mono" style="font-size:12px;color:var(--mute)">${esc(r.rel)}</td></tr>`).join('')}</tbody></table>`;
+  $('#results').innerHTML=h;
+}
+function matrixFor(rows){
+  const doms=Object.keys(DOM);
+  const n=(s,d)=>rows.filter(r=>r.stages.includes(s)&&r.domains.includes(d)).length;
+  const max=Math.max(1,...STAGES.flatMap(s=>doms.map(d=>n(s,d))));
+  return `<div class="mxs"><table class="mx"><tr><th></th>${doms.map(d=>`<th><div class="vh">${DOM[d]}</div></th>`).join('')}</tr>${STAGES.map(s=>`<tr style="--c:${ST[s].c}"><th class="r">${s}</th>${doms.map(d=>{const c=n(s,d);return `<td><a href="#" onclick="drill('${s}','${d}');return false" class="${c?'':'z'}" style="--a:${Math.round(c/max*85)+(c?10:0)}">${c||'·'}</a></td>`}).join('')}</tr>`).join('')}</table></div>`;
+}
+function drill(s,d){params.set('stage',s);params.set('domain',d);params.delete('view');sync();renderExplore();}
+function copyLink(){const u=location.href;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Link copied'),()=>toast('Copy the URL from the address bar'));}
+function exportCSV(){
+  const rows=filtered();const cols=['id','name','type','license','flag','maint','rel','ver','by','on','url'];
+  const lines=[[...cols,'stages','domains'].join(',')].concat(rows.map(r=>[...cols.map(c=>r[c]),r.stages.join('|'),r.domains.join('|')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));a.download='awesome-ai-sec-eng-filtered.csv';a.click();
+  toast(`Exported ${rows.length} rows`);
+}
+function renderTray(){
+  const p=pins().filter(byId);const t=$('#tray');
+  t.classList.toggle('on',p.length>0);
+  t.innerHTML=p.length?`<div class="wrap"><div class="pins">${p.map(id=>`<span class="pill">${esc(byId(id).name)}<button onclick="pinToggle('${id}')" aria-label="Remove">✕</button></span>`).join('')}</div><span class="mono" style="font-size:12px;color:var(--mute)">${p.length}/4</span><button class="btn pri sm" onclick="openCompare()" ${p.length<2?'disabled style="opacity:.5"':''}>Compare</button></div>`:'';
+}
+function openCompare(){
+  const rs=pins().map(byId).filter(Boolean);if(rs.length<2){toast('Pin at least 2');return;}
+  const row=(l,f)=>`<tr><th>${l}</th>${rs.map(r=>`<td>${f(r)}</td>`).join('')}</tr>`;
+  $('#modal').innerHTML=`<div class="modal" onclick="if(event.target===this)closeModal()"><div class="box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 style="margin:0">Compare</h2><button class="btn sm" onclick="closeModal()">Close</button></div>
+  <table><tr><th></th>${rs.map(r=>`<td><a href="${link(r.id)}" style="font-weight:700;color:var(--brand)">${esc(r.name)}</a></td>`).join('')}</tr>
+  ${row('Type',r=>esc(r.type))}${row('Stages',r=>`<div class="chips">${r.stages.map(schip).join('')}</div>`)}${row('Domains',r=>r.domains.map(d=>DOM[d]).join(', '))}${row('License',r=>`<div class="chips">${lchip(r)}</div>`)}${row('Verification',vchip)}${row('Last release',r=>esc(r.rel))}${row('Maintainer',r=>esc(r.maint))}${row('Care',r=>`<span style="color:var(--mute)">${esc(r.notes)}</span>`)}</table></div></div>`;
+}
+function closeModal(){$('#modal').innerHTML='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+renderExplore();
+  </script>
+</Base>

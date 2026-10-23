@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { resources, u, REPO } from '../lib/data';
+const latest = [...resources].map((r) => r.on).sort().pop();
+---
+<Base title="Data · Awesome AI Security Engineering" active="data">
+  <div class="wrap">
+    <div class="ex-head">
+      <div class="kicker">Data</div>
+      <h1 style="font-size:38px;margin:8px 0 0">Take the data with you.</h1>
+      <p class="sub" style="margin-top:12px">{resources.length} resources, last verified {latest}. The source of truth is one YAML file in the list repository.</p>
+    </div>
+    <div class="care">
+      <a class="carec" href={u('resources.json')}><div class="kicker">JSON</div><h4>resources.json</h4><p style="color:var(--mute);font-size:14px">Every field, for scripts and dashboards.</p></a>
+      <a class="carec" href={u('resources.csv')}><div class="kicker">CSV</div><h4>resources.csv</h4><p style="color:var(--mute);font-size:14px">Flat export for spreadsheets.</p></a>
+      <a class="carec" href={`${REPO}/blob/main/data/resources.yml`} target="_blank" rel="noopener"><div class="kicker">Source ↗</div><h4>data/resources.yml</h4><p style="color:var(--mute);font-size:14px">The single source of truth. Propose changes by pull request.</p></a>
+    </div>
+    <div class="callout" style="margin-top:26px;max-width:720px"><b>Licensing</b>Repository content and scripts are MIT. Listed projects keep their own licenses; check each before use.</div>
+  </div>
+</Base>

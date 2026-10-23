@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import Chips from '../components/Chips.astro';
+import Matrix from '../components/Matrix.astro';
+import { resources, STAGES, ST, u, byId, primary } from '../lib/data';
+
+const total = resources.length;
+const verified = resources.filter((r) => r.ver === 'verified').length;
+const direct = resources.filter((r) => r.ver === 'verified' && r.by === 'direct').length;
+const flagged = resources.filter((r) => r.flag).length;
+const bench = resources.filter((r) => r.stages.includes('break') && r.type === 'Benchmark');
+const careIds = ['nemo-guardrails', 'sigstore-model-transparency', 'garak'].filter((id) => resources.some((r) => r.id === id));
+---
+<Base active="home">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <div class="kicker">AI Security Engineers Community</div>
+        <h1>Open-source AI security tooling, <em>verified at the source.</em></h1>
+        <p class="lede">{total} tools, standards and benchmarks across the AI security lifecycle. Every entry is checked against its primary source for license and maintenance, and every caveat stays visible.</p>
+        <div class="cta"><a class="btn pri" href={u('explore/')}>Explore the list →</a><a class="btn" href={u('methodology/')}>How we verify</a></div>
+      </div>
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i>&nbsp;awesome · explore</div>
+        <div class="body">
+          <div><span class="p">$</span> awesome explore --stage break --type benchmark</div>
+          <div class="c">{bench.length} results</div>
+          {bench.map((r) => <div><a href={u(`resources/${r.id}/`)}>› {r.name}</a> <span class="c">{r.ver === 'verified' ? '✓' : '◐'} {r.license.split(' ')[0]}</span></div>)}
+          <div><span class="p">$</span> <span class="c">_</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="blk"><div class="wrap">
+    <div class="kicker">The lifecycle</div><h2>Five stages. One question each.</h2>
+    <p class="sub">Start where your question is. Each resource sits under its primary stage and is cross-referenced wherever else it applies.</p>
+    <div class="life">
+      {STAGES.map((s) => (
+        <a class="node" style={`--c:${ST[s].c}`} href={u(`explore/?stage=${s}`)}>
+          <span class="n">{resources.filter((r) => primary(r) === s).length}</span>
+          <span class="t">{s}</span><p>{ST[s].q}</p>
+        </a>
+      ))}
+    </div>
+  </div></section>
+
+  <section class="blk"><div class="wrap">
+    <div class="kicker">Evidence</div><h2>Trust is the product.</h2>
+    <p class="sub">Stars are not a criterion here. Verification level, license caveats and freshness are shown on every entry.</p>
+    <div class="stats">
+      <a class="stat" href={u('explore/?ver=verified')}><b>{verified} / {total}</b><span>entries fully verified</span><small>{direct} read directly from the primary source by a maintainer</small></a>
+      <a class="stat" href={u('explore/?ver=partial')}><b>{total - verified}</b><span>entries partially verified</span><small>Gaps are listed on the page, not hidden</small></a>
+      <a class="stat" href={u('explore/')}><b>{flagged}</b><span>entries with a license caveat</span><small>Open core, copyleft, share-alike, mixed licensing</small></a>
+    </div>
+  </div></section>
+
+  <section class="blk"><div class="wrap">
+    <div class="kicker">Coverage</div><h2>Where the list is thin.</h2>
+    <p class="sub">Lifecycle stage × technical domain. Hatched cells are gaps, which makes them contribution opportunities. Click any cell to inspect it.</p>
+    <Matrix />
+  </div></section>
+
+  <section class="blk"><div class="wrap">
+    <div class="kicker">Interpret with care</div><h2>What a listing does not tell you.</h2>
+    <p class="sub">Caveats are first-class content, taken from each entry's notes.</p>
+    <div class="care">
+      {careIds.map((id) => { const r = byId(id); return (
+        <a class="carec" href={u(`resources/${r.id}/`)}>
+          <div class="chips"><Chips r={r} show="v" /></div>
+          <h4>{r.name}</h4>
+          <div class="callout"><b>Interpret with care</b>{r.notes}</div>
+        </a>); })}
+    </div>
+  </div></section>
+
+  <section class="blk"><div class="wrap" style="text-align:center">
+    <h2>Missing something?</h2>
+    <p class="sub" style="margin:0 auto 20px">Suggest a resource, flag a broken link or challenge a license call. Everything is one YAML file and a pull request.</p>
+    <div class="cta" style="justify-content:center">
+      <a class="btn pri" href="https://github.com/GeraldCrescione/awesome-ai-security-engineering/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Suggest a resource</a>
+      <a class="btn" href="https://www.aiseceng.io/chapters/" target="_blank" rel="noopener">Find a chapter near you</a>
+    </div>
+  </div></section>
+</Base>

@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import Chips from '../../components/Chips.astro';
+import { resources, ST, DOM, u, cap, primary } from '../../lib/data';
+
+export function getStaticPaths() {
+  return resources.map((r) => ({ params: { id: r.id }, props: { r } }));
+}
+const { r } = Astro.props;
+const score = (x: any) => x.domains.filter((d: string) => r.domains.includes(d)).length;
+const rel = resources
+  .filter((x) => x.id !== r.id && x.stages.some((s) => r.stages.includes(s)) && x.domains.some((d) => r.domains.includes(d)))
+  .sort((a, b) => score(b) - score(a))
+  .slice(0, 6);
+---
+<Base title={`${r.name} · Awesome AI Security Engineering`} description={r.summary}>
+  <div class="wrap">
+    <div class="crumb"><a href={u()}>Overview</a> / <a href={u('explore/')}>Explore</a> / <a href={u(`explore/?stage=${primary(r)}`)}>{primary(r)}</a> / {r.name}</div>
+    <div class="res">
+      <div>
+        <div class="chips"><Chips r={r} show="s" /><span class="chip">{r.type}</span><Chips r={r} show="d" /></div>
+        <h1>{r.name}</h1>
+        <p class="lede" style="font-size:19px">{r.summary}</p>
+        <div class="cta">
+          <a class="btn pri" href={r.url} target="_blank" rel="noopener">Visit project ↗</a>
+          <a class="btn" href={u(`explore/?pin=${r.id}`)}>+ Pin to compare</a>
+        </div>
+        <div class="vtl">
+          <div class={r.ver === 'verified' ? 'on' : 'part'}>Verification<b>{r.ver === 'verified' ? '✓ Verified' : '◐ Partial'}</b></div>
+          <div class="on">Checked by<b>{r.by === 'direct' ? 'Maintainer, direct' : 'Delegated pass'}</b></div>
+          <div class="on">Verified on<b>{r.on}</b></div>
+          <div class={/not verified/i.test(r.rel) ? 'part' : 'on'}>Last release<b>{r.rel.split(' (')[0] || 'n/a'}</b></div>
+        </div>
+        {r.description && <><h3 class="s">About</h3><p style="color:var(--mute);margin:8px 0 18px">{r.description}</p></>}
+        {r.notes && <div class="callout"><b>Interpret with care</b>{r.notes}</div>}
+        {r.disc && <div class="callout disc" style="margin-top:12px"><b>Disclosure</b>{r.disc}</div>}
+        <h3 class="s">License</h3>
+        <div class="chips" style="margin-top:8px"><Chips r={r} show="l" /></div>
+        {r.licenseNote && <p style="color:var(--mute);margin:10px 0 0;font-size:14px">{r.licenseNote}</p>}
+        {r.licenseEvidence && <p style="margin:6px 0 0;font-size:13px"><a href={r.licenseEvidence} target="_blank" rel="noopener" style="color:var(--brand)">License evidence ↗</a></p>}
+        <h3 class="s">Where it fits</h3>
+        <p style="color:var(--mute);margin:6px 0 10px" set:html={r.stages.map((s: string) => `<b style="color:${ST[s].c}">${cap(s)}</b> — ${ST[s].q}`).join('<br>')} />
+        <div class="chips">{r.domains.map((d: string) => <a class="chip" href={u(`explore/?domain=${d}`)}>{DOM[d]}</a>)}</div>
+        <h3 class="s">Related resources</h3>
+        <div class="rel">
+          {rel.map((x) => (
+            <a class="card" style={`--c:${ST[primary(x)].c}`} href={u(`resources/${x.id}/`)}>
+              <div class="k" style="color:var(--c)">{primary(x)} · {x.type}</div>
+              <h3 style="font-size:15px">{x.name}</h3>
+              <div class="chips"><Chips r={x} show="v" /></div>
+            </a>
+          ))}
+        </div>
+      </div>
+      <aside class="facts"><dl>
+        <div><dt>Type</dt><dd>{r.type}</dd></div>
+        <div><dt>Maintainer</dt><dd>{r.maint}</dd></div>
+        <div><dt>License</dt><dd>{r.license}</dd></div>
+        <div><dt>Last release</dt><dd>{r.rel}</dd></div>
+        <div><dt>Verified</dt><dd>{r.ver} · {r.by}</dd></div>
+        <div><dt>Checked</dt><dd>{r.on}</dd></div>
+        <div><dt>Website</dt><dd><a href={r.url} target="_blank" rel="noopener">open ↗</a></dd></div>
+        <div><dt>Source</dt><dd><a href={r.source} target="_blank" rel="noopener">repo ↗</a></dd></div>
+        <div><dt>Data</dt><dd><a href="https://github.com/GeraldCrescione/awesome-ai-security-engineering/blob/main/data/resources.yml" target="_blank" rel="noopener">resources.yml ↗</a></dd></div>
+      </dl></aside>
+    </div>
+  </div>
+</Base>

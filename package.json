@@ -1,0 +1,17 @@
+{
+  "name": "awesome-ai-security-engineering-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "fetch-data": "node scripts/fetch-data.mjs",
+    "dev": "astro dev",
+    "build": "node scripts/fetch-data.mjs && astro build",
+    "build:offline": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.4.2",
+    "yaml": "^2.9.1"
+  }
+}

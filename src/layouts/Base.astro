@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+import { u, resources, REPO, COMMUNITY } from '../lib/data';
+const {
+  title = 'Awesome AI Security Engineering',
+  description = 'Open-source AI security tooling, verified at the source. Curated by the AI Security Engineers Community.',
+  active = '',
+} = Astro.props;
+const ticker = [...resources].sort((a, b) => b.on.localeCompare(a.on)).slice(0, 10);
+const nav = [
+  ['home', 'Overview', ''],
+  ['explore', 'Explore', 'explore/'],
+  ['research', 'Research', 'research/'],
+  ['methodology', 'Methodology', 'methodology/'],
+  ['data', 'Data', 'data/'],
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="theme-color" content="#050506" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <link rel="icon" href={u('favicon.svg')} type="image/svg+xml" />
+</head>
+<body>
+  <nav class="top"><div class="wrap">
+    <a class="logo" href={u()}><i></i>awesome<span>/ai-sec-eng</span></a>
+    <div class="links">
+      {nav.map(([k, label, path]) => <a href={u(path)} class={active === k ? 'on' : ''}>{label}</a>)}
+    </div>
+    <a class="btn sm" href={REPO} target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="btn pri sm" href={COMMUNITY + 'chapters/'} target="_blank" rel="noopener">Join a chapter</a>
+  </div></nav>
+  <div class="ticker"><div>
+    {[0, 1].map(() => ticker.map((d) => <><b>●</b> verified {d.on} · {d.name}</>))}
+  </div></div>
+  <main><slot /></main>
+  <footer><div class="wrap">
+    <span>© 2026 AI Security Engineers Community · List content MIT · Listed projects keep their own licenses</span>
+    <span>V1 preview · <a href={COMMUNITY} target="_blank" rel="noopener">aiseceng.io</a> · proudly powered by Snyk</span>
+  </div></footer>
+</body>
+</html>

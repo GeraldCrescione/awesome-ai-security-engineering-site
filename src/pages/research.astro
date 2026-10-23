@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import Chips from '../components/Chips.astro';
+import { resources, u } from '../lib/data';
+const bench = resources.filter((r) => r.type === 'Benchmark');
+const vb = resources.find((r) => r.id === 'vulnbench');
+---
+<Base title="Research · Awesome AI Security Engineering" active="research">
+  <div class="wrap">
+    <div class="ex-head">
+      <div class="kicker">Research</div>
+      <h1 style="font-size:38px;margin:8px 0 0">Benchmarks, side by side.</h1>
+      <p class="sub" style="margin-top:12px">Open benchmarks with reproducible artifacts. A benchmark score measures what the benchmark defines, nothing more.</p>
+    </div>
+    <table class="t">
+      <thead><tr><th>Benchmark</th><th>What it measures</th><th>License</th><th>Last release</th><th>Verification</th></tr></thead>
+      <tbody>
+        {bench.map((r) => (
+          <tr>
+            <td><a class="nm" href={u(`resources/${r.id}/`)}>{r.name}</a><span class="sm">{r.maint}</span></td>
+            <td style="max-width:360px;color:var(--mute)">{r.summary}</td>
+            <td><div class="chips"><Chips r={r} show="l" /></div></td>
+            <td class="mono" style="font-size:12px;color:var(--mute)">{r.rel}</td>
+            <td><Chips r={r} show="v" /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {vb && (
+      <section class="blk" style="margin-top:40px"><div>
+        <div class="kicker">Spotlight</div>
+        <h2>{vb.name}</h2>
+        <p class="sub">{vb.description}</p>
+        <div class="callout"><b>Interpret with care</b>{vb.notes}</div>
+        <div class="cta" style="margin-top:18px">
+          <a class="btn" href="https://vulnbench.com/" target="_blank" rel="noopener">vulnbench.com ↗</a>
+          <a class="btn" href="https://arxiv.org/abs/2606.15762" target="_blank" rel="noopener">Read the paper ↗</a>
+          <a class="btn" href={u(`resources/${vb.id}/`)}>Listing details</a>
+        </div>
+      </div></section>
+    )}
+  </div>
+</Base>

@@ -1,0 +1,18 @@
+---
+import { STAGES, ST, DOM, u, matrixCounts } from '../lib/data';
+const { doms, cells, max } = matrixCounts();
+---
+<div class="mxs"><table class="mx">
+  <tr><th></th>{doms.map((d) => <th><div class="vh">{DOM[d]}</div></th>)}</tr>
+  {STAGES.map((s, i) => (
+    <tr style={`--c:${ST[s].c}`}>
+      <th class="r">{s}</th>
+      {doms.map((d, j) => {
+        const n = cells[i][j];
+        return <td><a href={u(`explore/?stage=${s}&domain=${d}`)} class={n ? '' : 'z'}
+          style={`--a:${Math.round((n / max) * 85) + (n ? 10 : 0)}`}
+          title={`${n} resources · ${s} × ${DOM[d]}`}>{n || '·'}</a></td>;
+      })}
+    </tr>
+  ))}
+</table></div>
