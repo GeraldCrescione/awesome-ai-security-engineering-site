@@ -34,7 +34,7 @@ const nav = [
       {nav.map(([k, label, path]) => <a href={u(path)} class={active === k ? 'on' : ''}>{label}</a>)}
     </div>
     <a class="btn sm" href={REPO} target="_blank" rel="noopener">GitHub ↗</a>
-    <a class="btn pri sm" href={COMMUNITY + 'chapters/'} target="_blank" rel="noopener">Join a chapter</a>
+    <a class="btn pri sm" href={COMMUNITY + 'chapters/'} target="_blank" rel="noopener">Join the Community</a>
   </div></nav>
   <div class="ticker"><div>
     {[0, 1].map(() => ticker.map((d) => <><b>●</b> verified {d.on} · {d.name}</>))}
