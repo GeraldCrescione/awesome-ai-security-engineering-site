@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Chips from '../components/Chips.astro';
 import Matrix from '../components/Matrix.astro';
+import Contributors from '../components/Contributors.astro';
 import { resources, STAGES, ST, u, byId, primary, TAXONOMY_ISSUE } from '../lib/data';
 
 const total = resources.length;
@@ -31,6 +32,8 @@ const careIds = ['nemo-guardrails', 'sigstore-model-transparency', 'garak'].filt
       </div>
     </div>
   </div>
+
+  <Contributors />
 
   <section class="blk"><div class="wrap">
     <div class="kicker">The lifecycle</div><h2>The five pillars of AI Security Engineering.</h2>

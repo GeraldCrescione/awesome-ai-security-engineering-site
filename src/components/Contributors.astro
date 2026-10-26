@@ -1,0 +1,49 @@
+---
+// Logo carousel.
+// Snyk and RSAC: drop the official files into public/logos/ as snyk.svg and rsac.svg
+// (.png/.webp also accepted). Until then they show a placeholder wordmark.
+// The other slots are neutral "Contributor logo" tiles, to be replaced with real
+// logos once each contributor has agreed to be listed.
+import fs from 'node:fs';
+import path from 'node:path';
+import { u } from '../lib/data';
+
+const base = [
+  { slug: 'snyk', name: 'Snyk', cls: 'l-sans', glyph: '<polygon points="12,2 21,7 21,17 12,22 3,17 3,7" />' },
+  { slug: 'contributor-1', name: 'Contributor logo' },
+  { slug: 'rsac', name: 'RSAC', cls: 'l-wide', glyph: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3.5" />' },
+  { slug: 'contributor-2', name: 'Contributor logo' },
+];
+const items = base.map((b) => {
+  const ext = ['svg', 'png', 'webp'].find((e) => fs.existsSync(path.resolve(process.cwd(), `public/logos/${b.slug}.${e}`)));
+  return { ...b, generic: !b.glyph, file: ext ? u(`logos/${b.slug}.${ext}`) : '' };
+});
+---
+<section class="contrib" aria-label="Key contributors">
+  <div class="contrib-h">Key contributors</div>
+  <div class="marquee">
+    <ul class="track">
+      {[0, 1, 2, 3].map((copy) =>
+        items.map((it) => (
+          <li class={`logo-i ${it.file ? 'has-img' : it.generic ? 'generic' : it.cls}`} aria-hidden={copy > 0 ? 'true' : undefined}>
+            {it.file ? (
+              <img src={it.file} alt={copy === 0 ? it.name : ''} height="26" loading="lazy" />
+            ) : it.generic ? (
+              <>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="16" rx="2.5" /><circle cx="9" cy="10" r="1.6" /><path d="M21 16l-5-5-8 8" />
+                </svg>
+                <span>{it.name}</span>
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" set:html={it.glyph} />
+                <span>{it.name}</span>
+              </>
+            )}
+          </li>
+        )),
+      )}
+    </ul>
+  </div>
+</section>
