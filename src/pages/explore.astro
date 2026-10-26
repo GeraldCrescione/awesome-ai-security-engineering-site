@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import { resources, ST, DOM, STAGES, u } from '../lib/data';
+import { resources, ST, DOM, STAGES, u, VER_HELP, FLAG_HELP, CATALOGUE_HELP, CONTRIBUTING } from '../lib/data';
 const payload = JSON.stringify({
   D: resources.map(({ description, licenseNote, licenseEvidence, source, ...r }) => r),
-  ST, DOM, STAGES, base: u(),
+  ST, DOM, STAGES, base: u(), VER_HELP, FLAG_HELP, CATALOGUE_HELP, CONTRIBUTING,
 }).replace(/</g, '\\u003c');
 ---
 <Base title="Explore · Awesome AI Security Engineering" active="explore">
@@ -14,7 +14,7 @@ const payload = JSON.stringify({
   <script id="payload" type="application/json" set:html={payload}></script>
   <script is:inline>
 const P=JSON.parse(document.getElementById('payload').textContent);
-const {D,ST,DOM,STAGES,base}=P;
+const {D,ST,DOM,STAGES,base,VER_HELP,FLAG_HELP,CATALOGUE_HELP,CONTRIBUTING}=P;
 const $=(s,e=document)=>e.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cap=s=>s[0].toUpperCase()+s.slice(1);
@@ -27,9 +27,14 @@ let params=new URLSearchParams(location.search);
 const pins=()=>(params.get('pin')||'').split(',').filter(Boolean);
 const list=k=>(params.get(k)||'').split(',').filter(Boolean);
 
-const vchip=r=>`<span class="chip ${r.ver==='verified'?'ok':'warn'}">${r.ver==='verified'?'✓':'◐'} ${r.ver} · ${r.by}</span>`;
+const vchip=r=>`<span class="chip ${r.ver==='verified'?'ok':'warn'}" title="${esc(r.ver+': '+VER_HELP[r.ver]+' '+r.by+': '+VER_HELP[r.by])}">${r.ver==='verified'?'✓':'◐'} ${r.ver} · ${r.by}</span>`;
 const schip=s=>`<span class="chip" style="--c:${ST[s].c}"><i class="d"></i>${s}</span>`;
-const lchip=r=>`<span class="chip">${esc(r.license)}</span>${r.flag?`<span class="chip warn">⚑ ${esc(r.flag)}</span>`:''}`;
+const lchip=r=>`<span class="chip">${esc(r.license)}</span>${r.flag?`<span class="chip warn" title="${esc(FLAG_HELP[r.flag]||'')}">⚑ ${esc(r.flag)}</span>`:''}`;
+const helpBox=()=>`<details class="help"><summary>What do the verification labels and ⚑ license flags mean?</summary><div class="hb">
+  <div><h6>Verification</h6><dl>${['verified','partial','direct','delegated'].map(k=>`<dt>${k}</dt><dd>${esc(VER_HELP[k])}</dd>`).join('')}</dl></div>
+  <div><h6>License flags ⚑</h6><dl>${Object.keys(FLAG_HELP).map(k=>`<dt>⚑ ${esc(k)}</dt><dd>${esc(FLAG_HELP[k])}</dd>`).join('')}</dl></div>
+  <div class="hl">Flags are caveats, not rejections: every listed entry meets the inclusion criteria. This is not legal advice, so check the license of what you use. See <a href="${CATALOGUE_HELP}" target="_blank" rel="noopener">How to read an entry ↗</a> in the repository, the <a href="${CONTRIBUTING}" target="_blank" rel="noopener">inclusion criteria ↗</a>, or the <a href="${base}methodology/#labels">Methodology page</a>.</div>
+</div></details>`;
 const dchip=r=>r.disc?`<span class="chip snyk">Snyk-affiliated</span>`:'';
 
 function filtered(){
@@ -79,6 +84,7 @@ function renderExplore(){
       <button class="btn sm" onclick="resetFilters()">Reset filters</button>
     </aside>
     <div>
+      ${helpBox()}
       <div class="toolbar">
         <input class="search" placeholder="Search name, summary, maintainer, notes…" value="${esc(params.get('q')||'')}" oninput="setP('q',this.value,true)">
         <div class="tabs">${['table','cards','coverage'].map(v=>`<button class="${view===v?'on':''}" onclick="setP('view','${v==='table'?'':v}')">${cap(v)}</button>`).join('')}</div>

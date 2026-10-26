@@ -31,6 +31,7 @@ const rel = resources
           <div class="on">Verified on<b>{r.on}</b></div>
           <div class={/not verified/i.test(r.rel) ? 'part' : 'on'}>Last release<b>{r.rel.split(' (')[0] || 'n/a'}</b></div>
         </div>
+        <p style="margin:-10px 0 18px;font-size:13px"><a href={u('methodology/#labels')} style="color:var(--brand)">What do these labels mean? →</a></p>
         {r.description && <><h3 class="s">About</h3><p style="color:var(--mute);margin:8px 0 18px">{r.description}</p></>}
         {r.notes && <div class="callout"><b>Interpret with care</b>{r.notes}</div>}
         {r.disc && <div class="callout disc" style="margin-top:12px"><b>Disclosure</b>{r.disc}</div>}

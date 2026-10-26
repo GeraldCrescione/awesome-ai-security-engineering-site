@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Chips from '../components/Chips.astro';
 import Matrix from '../components/Matrix.astro';
-import { resources, STAGES, ST, u, byId, primary } from '../lib/data';
+import { resources, STAGES, ST, u, byId, primary, TAXONOMY_ISSUE } from '../lib/data';
 
 const total = resources.length;
 const verified = resources.filter((r) => r.ver === 'verified').length;
@@ -16,8 +16,8 @@ const careIds = ['nemo-guardrails', 'sigstore-model-transparency', 'garak'].filt
     <div class="hero">
       <div>
         <div class="kicker">AI Security Engineers Community</div>
-        <h1>Open-source AI security tooling, <em>verified at the source.</em></h1>
-        <p class="lede">{total} tools, standards and benchmarks across the AI security lifecycle. Every entry is checked against its primary source for license and maintenance, and every caveat stays visible.</p>
+        <h1>Open-source AI Security Engineering tooling, <em>verified at the source.</em></h1>
+        <p class="lede">{total} tools, standards and benchmarks across the AI Security Engineering lifecycle. Every entry is checked against its primary source for license and maintenance, and every caveat stays visible.</p>
         <div class="cta"><a class="btn pri" href={u('explore/')}>Explore the list →</a><a class="btn" href={u('methodology/')}>How we verify</a></div>
       </div>
       <div class="term">
@@ -34,14 +34,26 @@ const careIds = ['nemo-guardrails', 'sigstore-model-transparency', 'garak'].filt
 
   <section class="blk"><div class="wrap">
     <div class="kicker">The lifecycle</div><h2>Five stages. One question each.</h2>
-    <p class="sub">Start where your question is. Each resource sits under its primary stage and is cross-referenced wherever else it applies.</p>
+    <p class="sub">These five stages are based on an initial vision of what an AI Security Engineer's work is about. Start where your question is.</p>
     <div class="life">
-      {STAGES.map((s) => (
-        <a class="node" style={`--c:${ST[s].c}`} href={u(`explore/?stage=${s}`)}>
-          <span class="n">{resources.filter((r) => primary(r) === s).length}</span>
-          <span class="t">{s}</span><p>{ST[s].q}</p>
-        </a>
-      ))}
+      {STAGES.map((s) => {
+        const prim = resources.filter((r) => primary(r) === s).length;
+        const also = resources.filter((r) => r.stages.includes(s) && primary(r) !== s).length;
+        return (
+          <a class="node" style={`--c:${ST[s].c}`} href={u(`explore/?stage=${s}`)}>
+            <span class="t">{s}</span>
+            <span class="n">{prim}<small>{prim === 1 ? 'resource' : 'resources'}</small></span>
+            <p>{ST[s].q}</p>
+            {also > 0 && <span class="x">+ {also} more from other stages</span>}
+          </a>
+        );
+      })}
+    </div>
+    <p class="mono" style="font-size:12.5px;color:var(--dim);margin:14px 0 0">Each of the {total} resources is counted once, under its primary stage. Many also apply to other stages, and open under those too.</p>
+    <div class="callout" style="margin-top:22px;max-width:760px">
+      <b>Challenge this model</b>
+      AI Security Engineering is still forming, and so is this lifecycle. Do these stages match how you actually work? Is a stage missing, mislabeled or in the wrong order? Propose a change as a contribution to the repository.
+      <div style="margin-top:12px"><a class="btn sm" href={TAXONOMY_ISSUE} target="_blank" rel="noopener">Propose a change to the lifecycle ↗</a></div>
     </div>
   </div></section>
 

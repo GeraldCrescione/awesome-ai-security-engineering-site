@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { REPO } from '../lib/data';
+import { VER_HELP, FLAG_HELP, CONTRIBUTING, CATALOGUE_HELP } from '../lib/data';
 ---
 <Base title="Methodology · Awesome AI Security Engineering" active="methodology">
   <div class="wrap">
@@ -16,13 +16,20 @@ import { REPO } from '../lib/data';
     </div>
     <h3 class="s" style="margin-top:0">Quality and neutrality</h3>
     <p style="color:var(--mute);max-width:720px">Entries are judged on engineering relevance, technical credibility, documentation, maintenance and distinctiveness. Stars are not a criterion. There is no placement based on sponsorship or brand, no proprietary products, and no projects maintained by direct competitors of the community's sponsor.</p>
-    <h3 class="s">Verification levels</h3>
-    <div class="vtl" style="max-width:720px">
-      <div class="on">verified · direct<b>A maintainer read the primary source (LICENSE file or official page)</b></div>
-      <div class="on">verified · delegated<b>A delegated research pass read the primary source; spot-checks welcome</b></div>
-      <div class="part">partial<b>Some facts could not be confirmed; gaps are stated on the entry</b></div>
+    <h3 class="s" id="labels">Reading the labels</h3>
+    <p style="color:var(--mute);max-width:720px;margin:6px 0 16px">Every entry shows how well its facts were checked, and any license caveat worth knowing before you use it.</p>
+    <div class="care" style="grid-template-columns:1fr 1fr">
+      <div class="carec"><div class="kicker">Verification</div>
+        <dl style="margin:10px 0 0">{['verified', 'partial', 'direct', 'delegated'].map((k) => <><dt class="mono" style="color:var(--brand);font-size:12.5px;margin-top:10px">{k}</dt><dd style="margin:2px 0 0;color:var(--mute);font-size:14px">{VER_HELP[k]}</dd></>)}</dl>
+      </div>
+      <div class="carec"><div class="kicker">License flags ⚑</div>
+        <dl style="margin:10px 0 0">{Object.entries(FLAG_HELP).map(([k, v]) => <><dt class="mono" style="color:var(--warn);font-size:12.5px;margin-top:10px">⚑ {k}</dt><dd style="margin:2px 0 0;color:var(--mute);font-size:14px">{v}</dd></>)}</dl>
+      </div>
     </div>
-    <div class="callout" style="max-width:720px"><b>Interpret with care</b>Last-release data is evidence found on the verification date, not a promise of maintenance.</div>
-    <p style="margin-top:26px"><a class="btn" href={`${REPO}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener">Full rules in CONTRIBUTING.md ↗</a></p>
+    <div class="callout" style="max-width:720px;margin-top:16px"><b>Interpret with care</b>Flags are caveats, not rejections: every listed entry meets the inclusion criteria. Last-release data is evidence found on the verification date, not a promise of maintenance. This is not legal advice.</div>
+    <p style="margin-top:26px;display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn" href={CONTRIBUTING} target="_blank" rel="noopener">Full rules in CONTRIBUTING.md ↗</a>
+      <a class="btn" href={CATALOGUE_HELP} target="_blank" rel="noopener">How to read an entry ↗</a>
+    </p>
   </div>
 </Base>

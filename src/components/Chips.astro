@@ -1,16 +1,16 @@
 ---
 import type { Resource } from '../lib/data';
-import { ST } from '../lib/data';
+import { ST, VER_HELP, FLAG_HELP } from '../lib/data';
 const { r, show = 'vl' } = Astro.props as { r: Resource; show?: string };
 ---
 {show.includes('s') && r.stages.map((s) => (
   <span class="chip" style={`--c:${ST[s].c}`}><i class="d"></i>{s}</span>
 ))}
 {show.includes('v') && (
-  <span class={`chip ${r.ver === 'verified' ? 'ok' : 'warn'}`}>
+  <span class={`chip ${r.ver === 'verified' ? 'ok' : 'warn'}`} title={`${r.ver}: ${VER_HELP[r.ver]} ${r.by}: ${VER_HELP[r.by]}`}>
     {r.ver === 'verified' ? '✓' : '◐'} {r.ver} · {r.by}
   </span>
 )}
 {show.includes('l') && <span class="chip">{r.license}</span>}
-{show.includes('l') && r.flag && <span class="chip warn">⚑ {r.flag}</span>}
+{show.includes('l') && r.flag && <span class="chip warn" title={FLAG_HELP[r.flag]}>⚑ {r.flag}</span>}
 {show.includes('d') && r.disc && <span class="chip snyk">Snyk-affiliated</span>}

@@ -8,7 +8,26 @@ export const COMMUNITY = 'https://www.aiseceng.io/';
 export const u = (p = '') =>
   import.meta.env.BASE_URL.replace(/\/$/, '') + '/' + p.replace(/^\//, '');
 
-export const STAGES = ['discover', 'design', 'build', 'break', 'defend'] as const;
+export const CATALOGUE_HELP = `${REPO}/blob/main/resources/README.md`;
+export const CONTRIBUTING = `${REPO}/blob/main/CONTRIBUTING.md`;
+export const TAXONOMY_ISSUE = `${REPO}/issues/new?template=taxonomy.yml`;
+
+export const VER_HELP: Record<string, string> = {
+  verified: 'License and release evidence were both checked against the primary source.',
+  partial: 'Something could not be confirmed. The entry notes say what is missing.',
+  direct: 'Checked from the primary source (for example the LICENSE file) by a maintainer-run pass.',
+  delegated: 'A separate research pass read the primary source. A human spot-check is welcome.',
+};
+export const FLAG_HELP: Record<string, string> = {
+  'Share-alike': 'Creative Commons Share-Alike (CC-BY-SA). You can reuse and adapt the content with credit, but whatever you build from it must be shared under the same license.',
+  Copyleft: 'Copyleft license (LGPL). Changes you make to the library must be shared under the same license. Using it unmodified as a dependency is usually fine, but check with your legal team.',
+  'Open core': 'Only part of the project is open source. Some capabilities need a proprietary hosted service, account or token. The entry says where the boundary is.',
+  'Commercial add-ons': 'The tool itself is open source, but its maintainer also sells related commercial products that are not covered by this listing.',
+  'Mixed licensing': 'Different parts of the repository carry different licenses. Check the license of the exact component you plan to use.',
+  'License transition': 'The project is moving from one license to another. Older contributions may remain under the previous license.',
+};
+
+export const STAGES =['discover', 'design', 'build', 'break', 'defend'] as const;
 export const ST: Record<string, { c: string; q: string }> = {
   discover: { c: '#5eead4', q: 'What AI exists in our environment, and what can it reach?' },
   design: { c: '#a78bfa', q: 'What are the trust boundaries, identities and permissions?' },
