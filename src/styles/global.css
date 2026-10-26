@@ -1,6 +1,6 @@
 :root{
   --bg:#050506;--panel:#0d0d10;--panel2:#141418;--line:#24242b;--text:#f2f2f4;--mute:#9a9aa6;--dim:#63636e;
-  --brand:#b6ff5c;--ok:#5ee6a0;--warn:#ffc857;--bad:#ff6b81;
+  --brand:#f87a98;--ok:#5ee6a0;--warn:#ffc857;--bad:#ff6b81;
   --discover:#5eead4;--design:#a78bfa;--build:#60a5fa;--break:#fb7185;--defend:#fbbf24;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
@@ -23,7 +23,7 @@ nav.top .links a:hover,nav.top .links a.on{color:var(--text);background:var(--pa
 .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:14px;white-space:nowrap}
 .btn:hover{border-color:#3a3a45;background:var(--panel2)}
 .btn.pri{background:var(--brand);color:#000;border-color:var(--brand);font-weight:600}
-.btn.pri:hover{background:#c8ff80}
+.btn.pri:hover{background:#fa94ab}
 .btn.sm{padding:5px 10px;font-size:13px}
 /* ticker */
 .ticker{border-bottom:1px solid var(--line);overflow:hidden;font:12px var(--mono);color:var(--mute);white-space:nowrap;background:#08080a}
