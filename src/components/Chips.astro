@@ -13,4 +13,4 @@ const { r, show = 'vl' } = Astro.props as { r: Resource; show?: string };
 )}
 {show.includes('l') && <span class="chip">{r.license}</span>}
 {show.includes('l') && r.flag && <span class="chip warn" title={FLAG_HELP[r.flag]}>⚑ {r.flag}</span>}
-{show.includes('d') && r.disc && <span class="chip snyk">Snyk-affiliated</span>}
+{show.includes('d') && r.disc && <span class="chip snyk">{/snyk/i.test(r.disc) ? 'Snyk-affiliated' : 'Disclosure'}</span>}

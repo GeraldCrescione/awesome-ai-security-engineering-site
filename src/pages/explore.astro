@@ -35,7 +35,7 @@ const helpBox=()=>`<details class="help"><summary>What do the verification label
   <div><h6>License flags ⚑</h6><dl>${Object.keys(FLAG_HELP).map(k=>`<dt>⚑ ${esc(k)}</dt><dd>${esc(FLAG_HELP[k])}</dd>`).join('')}</dl></div>
   <div class="hl">Flags are caveats, not rejections: every listed entry meets the inclusion criteria. This is not legal advice, so check the license of what you use. See <a href="${CATALOGUE_HELP}" target="_blank" rel="noopener">How to read an entry ↗</a> in the repository, the <a href="${CONTRIBUTING}" target="_blank" rel="noopener">inclusion criteria ↗</a>, or the <a href="${base}methodology/#labels">Methodology page</a>.</div>
 </div></details>`;
-const dchip=r=>r.disc?`<span class="chip snyk">Snyk-affiliated</span>`:'';
+const dchip=r=>r.disc?`<span class="chip snyk">${/snyk/i.test(r.disc)?'Snyk-affiliated':'Disclosure'}</span>`:'';
 
 function filtered(){
   const st=list('stage'),dm=list('domain'),ty=list('type'),ve=list('ver'),fl=list('flag'),q=(params.get('q')||'').toLowerCase();
